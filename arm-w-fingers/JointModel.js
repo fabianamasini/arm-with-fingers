@@ -72,24 +72,23 @@ var g_joint1Angle = 0.0; // The rotation angle of joint1 (degrees)
 var g_fingerAngle = 0.0;
 
 function keydown(ev, gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor) {
-  console.log(ev.keyCode);
   switch (ev.keyCode) {
-    case 38: // Up arrow key -> the positive rotation of joint1 around the z-axis
+    case 38: // Up arrow key -> the positive rotation of Joint 1 around the z-axis
       if (g_joint1Angle < 45.0) g_joint1Angle += ANGLE_STEP;
       break;
-    case 40: // Down arrow key -> the negative rotation of joint1 around the z-axis
+    case 40: // Down arrow key -> the negative rotation of Joint 1 around the z-axis
       if (g_joint1Angle > 0.0) g_joint1Angle -= ANGLE_STEP;
       break;
-    case 39: // Right arrow key -> the positive rotation of arm1 around the y-axis
+    case 39: // Right arrow key -> the positive rotation of Arm 1 around the y-axis
       g_arm1Angle = (g_arm1Angle + ANGLE_STEP) % 360;
       break;
-    case 37: // Left arrow key -> the negative rotation of arm1 around the y-axis
+    case 37: // Left arrow key -> the negative rotation of Arm 1 around the y-axis
       g_arm1Angle = (g_arm1Angle - ANGLE_STEP) % 360;
       break;
-    case 65:
+    case 65: // 'A' key -> fingers' outside rotation
       if (g_fingerAngle < 45.0) g_fingerAngle += ANGLE_STEP;
       break;
-    case 68:
+    case 68: // 'D' key -> fingers' inside rotation
       if (g_fingerAngle > 0) g_fingerAngle -= ANGLE_STEP;
       break;
     default: return; // Skip drawing at no effective action
@@ -118,8 +117,6 @@ function initVertexBuffers(gl) {
     16, 17, 18, 16, 18, 19,    // down
     20, 21, 22, 20, 22, 23     // back
   ]);
-
-
 
   // Write the vertex property to buffers 
   if (!initArrayBuffer(gl, 'a_Position', vertices, gl.FLOAT, 3)) return -1;
@@ -170,35 +167,32 @@ function draw(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor) {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Arm1
-  var arm1Length = 10.0; // Length of arm1
+  // Arm 1
   g_modelMatrix.setTranslate(-15.0, -12.0, -20.0);
-  g_modelMatrix.rotate(90, 0.0, 0.0, 1.0);    // Rotate around the y-axis
-  g_modelMatrix.rotate(-g_arm1Angle, 1.0, 0.0, 0.0);    // Rotate around the y-axis
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 0.0, 1.0]); // Draw
+  g_modelMatrix.rotate(90, 0.0, 0.0, 1.0);
+  g_modelMatrix.rotate(-g_arm1Angle, 1.0, 0.0, 0.0);
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 0.0, 1.0]);
 
-  // Arm2
-  g_modelMatrix.translate(1.5, 10, 0.0); 　　　// Move to joint1
+  // Joint 1
+  g_modelMatrix.translate(1.5, 10, 0.0);
   g_modelMatrix.rotate(-g_joint1Angle, 0.0, 0.0, 1.0);
-  g_modelMatrix.translate(-1.5, 0, 0.0); 　　　// Move to joint1
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 0.0, 1.0, 1.0]); // Draw
+  g_modelMatrix.translate(-1.5, 0, 0.0);
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 0.0, 1.0, 1.0]);
 
   pushMatrix(g_modelMatrix);
 
   //Finger 1
-  g_modelMatrix.translate(1.5, 10, 0.0); 　　　// Move to joint1
+  g_modelMatrix.translate(1.5, 10, 0.0); 
   g_modelMatrix.rotate(-g_fingerAngle, 0.0, 0.0, 1.0);
-  g_modelMatrix.translate(-0.3, 0.0, 0.0); 　　　// Move to joint1
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　　// Move to joint1
+  g_modelMatrix.translate(-0.3, 0.0, 0.0);
   g_modelMatrix.scale(0.2, 0.2, 0.2);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]);
 
-  //Joint finger 1
-  g_modelMatrix.translate(-1.5, 10, 0.0); 　　　// Move to joint1
+  //1st finger's joint
+  g_modelMatrix.translate(-1.5, 10, 0.0); 
   g_modelMatrix.rotate(2 * g_fingerAngle, 0.0, 0.0, 1.0);
-  g_modelMatrix.translate(1.5, 0.0, 0.0); 　　　// Move to joint1
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　　// Move to joint1
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]); // Draw
+  g_modelMatrix.translate(1.5, 0.0, 0.0);
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]);
 
   g_modelMatrix = popMatrix();
   pushMatrix(g_modelMatrix);
@@ -207,16 +201,14 @@ function draw(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor) {
   g_modelMatrix.translate(1.5, 10, 1.0);
   g_modelMatrix.rotate(-g_fingerAngle, 0.0, 0.0, 1.0);
   g_modelMatrix.translate(-0.3, 0.0, 0.0);
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　
   g_modelMatrix.scale(0.2, 0.2, 0.2);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]);
 
-  //Joint finger 2
+  //2nd finger's joint
   g_modelMatrix.translate(-1.5, 10, 0.0);
   g_modelMatrix.rotate(2 * g_fingerAngle, 0.0, 0.0, 1.0);
   g_modelMatrix.translate(1.5, 0.0, 0.0);
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]);
 
   g_modelMatrix = popMatrix();
   pushMatrix(g_modelMatrix);
@@ -225,16 +217,14 @@ function draw(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor) {
   g_modelMatrix.translate(1.5, 10, -1.0);
   g_modelMatrix.rotate(-g_fingerAngle, 0.0, 0.0, 1.0);
   g_modelMatrix.translate(-0.3, 0.0, 0.0);
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　
   g_modelMatrix.scale(0.2, 0.2, 0.2);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]);
 
-  //Joint finger 3
+  //3rd finger's joint
   g_modelMatrix.translate(-1.5, 10, 0.0);
   g_modelMatrix.rotate(2 * g_fingerAngle, 0.0, 0.0, 1.0);
   g_modelMatrix.translate(1.5, 0.0, 0.0);
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]);
 
   g_modelMatrix = popMatrix();
   pushMatrix(g_modelMatrix);
@@ -243,16 +233,14 @@ function draw(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor) {
   g_modelMatrix.translate(-1.5, 10, 0.0);
   g_modelMatrix.rotate(g_fingerAngle, 0.0, 0.0, 1.0);
   g_modelMatrix.translate(0.3, 0.0, 0.0);
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　　// Move to joint1
   g_modelMatrix.scale(0.2, 0.2, 0.2);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]); // Draw
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [0.0, 0.0, 1.0, 1.0]);
 
-  //Joint finger 4
-  g_modelMatrix.translate(1.5, 10, 0.0); 　　　// Move to joint1
+  //4th finger's joint
+  g_modelMatrix.translate(1.5, 10, 0.0);
   g_modelMatrix.rotate(-2 * g_fingerAngle, 0.0, 0.0, 1.0);
-  g_modelMatrix.translate(-1.5, 0.0, 0.0); 　　　// Move to joint1
-  //g_modelMatrix.translate(-1.5, 0, 0.0); 　　　// Move to joint1
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]); // Draw
+  g_modelMatrix.translate(-1.5, 0.0, 0.0);
+  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_FragColor, [1.0, 1.0, 1.0, 1.0]);
 
 }
 
